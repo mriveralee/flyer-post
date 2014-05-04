@@ -115,13 +115,16 @@ exports.getFacebook = function(req, res, next) {
 
 exports.getFacebookEvent = function(req, res, next) {
   var eventId = req.params.eventId;
-  if (!eventId) {
-    res.render('404', { status: 404, url: req.url });
-  }
   var token = _.findWhere(req.user.tokens, { kind: 'facebook' });
   graph.setAccessToken(token.accessToken);
-  graph.get('' + eventId, function(err, eventData) {
+  graph.get(eventId, function(err, eventData) {
     if (err) return next(err);
+    if (!isFacebookEvent(eventData)) {
+      // Go to home page if not an actual facebook event
+      res.redirect('/');
+      return;
+    }
+    console.log(eventData, err);
     var fbEvent = eventData;
     res.render('events/view', {
       title: fbEvent.name + ' - FlyerPost',
@@ -130,8 +133,10 @@ exports.getFacebookEvent = function(req, res, next) {
   });
 };
 
-
-
+function isFacebookEvent(eventData) {
+  if (!eventData) return false;
+  return eventData.owner && eventData.description && eventData.name;
+}
 /**
  * GET /api/scraping
  * Web scraping example using Cheerio library.
