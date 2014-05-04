@@ -123,6 +123,10 @@ app.get('/api/facebook', passportConf.isAuthenticated, passportConf.isAuthorized
 app.get('/api/github', passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getGithub);
 app.get('/api/twitter', passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getTwitter);
 
+// Flyer Post routes
+app.get('/event/:id', apiController.getFacebookEvent);
+
+
 /**
  * OAuth routes for sign-in.
  */

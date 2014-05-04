@@ -112,6 +112,26 @@ exports.getFacebook = function(req, res, next) {
     });
 };
 
+
+exports.getFacebookEvent = function(req, res, next) {
+  var eventId = req.params.eventId;
+  if (!eventId) {
+    res.render('404', { status: 404, url: req.url });
+  }
+  var token = _.findWhere(req.user.tokens, { kind: 'facebook' });
+  graph.setAccessToken(token.accessToken);
+  graph.get('' + eventId, function(err, eventData) {
+    if (err) return next(err);
+    var fbEvent = eventData.data;
+    res.render('events/view', {
+      title: fbEvent.name + ' - FlyerPost',
+      fbEvent: fbEvent,
+    });
+  });
+};
+
+
+
 /**
  * GET /api/scraping
  * Web scraping example using Cheerio library.
