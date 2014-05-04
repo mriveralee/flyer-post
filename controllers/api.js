@@ -122,7 +122,7 @@ exports.getFacebookEvent = function(req, res, next) {
   graph.setAccessToken(token.accessToken);
   graph.get('' + eventId, function(err, eventData) {
     if (err) return next(err);
-    var fbEvent = eventData.data;
+    var fbEvent = eventData;
     res.render('events/view', {
       title: fbEvent.name + ' - FlyerPost',
       fbEvent: fbEvent,

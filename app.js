@@ -124,7 +124,7 @@ app.get('/api/github', passportConf.isAuthenticated, passportConf.isAuthorized, 
 app.get('/api/twitter', passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getTwitter);
 
 // Flyer Post routes
-app.get('/event/:id', apiController.getFacebookEvent);
+app.get('/event/:eventId', apiController.getFacebookEvent);
 
 
 /**

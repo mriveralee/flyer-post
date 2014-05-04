@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+  .page-header
+    h2
+      i.fa.fa-facebook-square(style='color: #335397')
+      | View Event
+
+  br
+  .lead FB Information for #{fbEvent.name} (#{fbEvent.id})
+
+  ul.list-unstyled
+      li
+        .panel.panel-default
+          .panel-body
+            .clearfix
+              img.pull-left(src='http://placekitten.com/g/140/200', style='margin-right: 10px')
+              =fbEvent.name
+              small.text-muted hosted by #{fbEvent.owner.name}
+              br
+              small #{fbEvent.description}
