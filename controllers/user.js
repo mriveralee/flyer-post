@@ -170,6 +170,7 @@ exports.postUpdatePassword = function(req, res, next) {
   });
 };
 
+
 /**
  * POST /account/delete
  * Delete user account.

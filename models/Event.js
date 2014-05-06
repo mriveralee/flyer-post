@@ -5,19 +5,19 @@ var crypto = require('crypto');
 var  fbBaseEventUrl = 'http://www.facebook.com/'
 
 var eventSchema = new mongoose.Schema({
-  id: { type: String, unique: true },
+  fbId: { type: String, unique: true },
   name: String,
   description: String,
   privacy: String,
-  owner: String,
+  owner: Object,
   event_photo: String,
   cover_photo: String,
-  start_time: Number,
-  end_time: Number,
+  start_time: String,
+  end_time: String,
   location: String,
   is_date_only: Boolean,
   ticket_uri: String,
-  updated_time: Number,
+  updated_time: String,
   timezone: String,
   venue: String,
   attending: Array,
@@ -28,8 +28,6 @@ var eventSchema = new mongoose.Schema({
 // TODO: Get event details from the FB Events API
 // TODO: Store in our DB
 // TODO: Return results to the pages
-
-
 // TODO: Make function
 
 
@@ -54,22 +52,6 @@ eventSchema.pre('save', function(next) {
   });
 });
 
-userSchema.methods.comparePassword = function(candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err) return cb(err);
-    cb(null, isMatch);
-  });
-};
 
-/**
- *  Get a URL to a user's Gravatar email.
- */
-
-userSchema.methods.gravatar = function(size, defaults) {
-  if (!size) size = 200;
-  if (!defaults) defaults = 'retro';
-  var md5 = crypto.createHash('md5').update(this.email);
-  return 'https://gravatar.com/avatar/' + md5.digest('hex').toString() + '?s=' + size + '&d=' + defaults;
-};
 
 module.exports = mongoose.model('Event', eventSchema);

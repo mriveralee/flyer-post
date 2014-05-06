@@ -18,6 +18,7 @@ var homeController = require('./controllers/home');
 var userController = require('./controllers/user');
 var apiController = require('./controllers/api');
 var contactController = require('./controllers/contact');
+var eventsController = require('./controllers/events');
 
 /**
  * API keys + Passport configuration.
@@ -124,7 +125,10 @@ app.get('/api/github', passportConf.isAuthenticated, passportConf.isAuthorized, 
 app.get('/api/twitter', passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getTwitter);
 
 // Flyer Post routes
-app.get('/event/:eventId', apiController.getFacebookEvent);
+app.get('/events/view/:eventId', eventsController.getEvent);
+app.get('/events/create', eventsController.getCreateEvent);
+app.post('/events/create', eventsController.postCreateEvent);
+app.delete('/events/delete', eventsController.deleteEvent);
 
 
 /**
