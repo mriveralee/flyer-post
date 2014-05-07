@@ -48,7 +48,7 @@ exports.postCreateEvent = function(req, res) {
     if (err || !isFacebookEvent(eventData)) {
       // Go to create events page if not an actual facebook event & flash error
       if (err.code === 11000) {
-        req.flash('errors', { msg: 'Event with that url already exists.' });
+        req.flash('errors', { msg: 'Facebook Event with that url already exists.' });
       } else {
         // Show an error for an invalid fb url
         req.flash('errors',
