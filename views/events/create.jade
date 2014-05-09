@@ -2,7 +2,9 @@ extends ../layout
 
 block content
   .page-header
-    h3 Create Event
+    h3
+      i.fa.fa-pencil-square-o(style='color: #335397')
+      | Create Event
 
   form.form-horizontal(role='form', method='POST')
     input(type='hidden', name='_csrf', value=token)

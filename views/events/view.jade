@@ -47,9 +47,20 @@ block content
         p(style='margin-left: 10px') #{fbEvent.location}
 
         h4
-          i.fa.fa-location-arrow(style='color: #335397')
+          i.fa.fa-users(style='color: #335397')
           | Connect
-        p(style='margin-left: 10px') #{fbEvent.location}
+        p(style='margin-left: 10px')
+          - var fbl = 'http://facebook.com/events/' + fbEvent.fbId;
+          a.connect(href='#{fbl}',target='_blank')
+            i.fa.fa-facebook-square
+            | Facebook Event
+          &nbsp; | &nbsp;
+          - var fbg = 'https://www.google.com/calendar/render?action=TEMPLATE&text=' + fbEvent.name.replace(' ', '+')  + '&details=' + fbEvent.description.replace(' ', '+').replace('\n','+') +'&location=' + fbEvent.location.replace(' ', '+') + '&trp=true&sf=true&output=xml';
+          a.connect(href='#{fbg}', target='_blank')
+            i.fa.fa-calendar-o
+            | Google Calendar
+
+
 
         small.text-muted
 

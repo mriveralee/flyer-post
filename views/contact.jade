@@ -2,7 +2,9 @@ extends layout
 
 block content
   .page-header
-    h3 Contact Form
+    h3
+      i.fa.fa-envelope-o(style='color: #335397')
+      | Contact Form
 
   form.form-horizontal(role='form', method='POST')
     input(type='hidden', name='_csrf', value=token)

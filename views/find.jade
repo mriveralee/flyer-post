@@ -9,10 +9,73 @@ if user
 
 
 block content
-  h1 Find Events @ Penn
-  p.lead
-    | Use this document as a way to quickly start any new project.
+  h1
+    i.fa.fa-calendar(style='color: #335397')
+    |  Find Events @ Penn
     br
-    ul
-      each ev in events
-        li= ev
+  p.lead
+    form(role='form', method='POST',style='margin-right: 7px;')
+      input(type='hidden', name='_csrf', value=token)
+      input.form-control(type='text', name='search', id='search', placeHolder='Search for events', style='text-align:center;',autofocus=true)
+
+
+    br
+    ul.list-unstyled
+      for fbEvent in events
+
+        li.find-inline(style='cursor:pointer; cursor:hand;width:570px')
+          .panel.panel-default
+            .panel-body
+              .clearfix
+                img.pull-left(src='#{fbEvent.picture}', width=260, height=260, style='margin-left:-10px; margin-right: 5px')
+                h4
+                  // i.fa.fa-calendar(style='color: #335397')
+                  |  #{fbEvent.name}
+                  br
+                  small.text-muted(style='font-size:14px;')
+                    | by #{fbEvent.owner.name}
+
+                - var start = ''; var end = '';
+                if (fbEvent.start_time != '')
+                  - var y = fbEvent.start_time.split('T');
+                  - var z = ((y.length > 1) ? y[0] + ' ' + y[1].split('-')[0] : y[0]);
+                  - var sDate = new Date(z);
+                  - var tStr = sDate.toLocaleTimeString();
+                  - start = sDate.toLocaleDateString() + ', ' + tStr.substring(0);
+                  // p(style='margin-left: 10px')
+                  //  strong Starts: &nbsp;
+                  //  | #{start}
+                if (fbEvent.end_time != '')
+                  - var y = fbEvent.end_time.split('T');
+                  - var z = ((y.length > 1) ? y[0] + ' ' + y[1].split('-')[0] : y[0]);
+                  - var eDate = new Date(z);
+                  - var tStr = eDate.toLocaleTimeString();
+                  - end = eDate.toLocaleDateString() + ', ' + tStr.substring(0);
+                  p(style='margin-left: 10px')
+                    strong Starts: &nbsp;
+                    |  #{start}
+                    if end.length > 0
+                      br
+                      strong Ends: &nbsp;
+                      | #{end}
+                      //br
+                    //small.text-muted(style='font-size:14px;')
+                    //  | hosted by #{fbEvent.owner.name}
+                // small.text-muted  @#{tweet.user.screen_name}
+                - var desc = fbEvent.description.replace(/\n/g, '<br/>');
+                - desc = (desc.substring(0, (desc.length <= 130 ? desc.length - 1 : 130))) + "...";
+                p(style='margin-left: 10px') !{desc}
+                //small #{tweet.text}
+
+
+                h4
+                p(style='margin-left: 10px')
+                  - var fbl = 'http://facebook.com/events/' + fbEvent.fbId;
+                  a.connect(href='#{fbl}',target='_blank')
+                    i.fa.fa-facebook-square
+                    | Facebook Event
+                  | &nbsp; | &nbsp;
+                  - var fbg = 'https://www.google.com/calendar/render?action=TEMPLATE&text=' + fbEvent.name.replace(' ', '+')  + '&details=' + fbEvent.description.replace(' ', '+').replace('\n','+') +'&location=' + fbEvent.location.replace(' ', '+') + '&trp=true&sf=true&output=xml';
+                  a.connect(href='#{fbg}', target='_blank')
+                    i.fa.fa-calendar-o
+                    | Google Calendar
