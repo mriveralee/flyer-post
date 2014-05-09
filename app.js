@@ -129,9 +129,9 @@ app.get('/api/twitter', passportConf.isAuthenticated, passportConf.isAuthorized,
 
 // Flyer Post routes
 app.get('/events/view/:eventId', eventsController.getEvent);
-app.get('/events/create', eventsController.getCreateEvent);
-app.post('/events/create', eventsController.postCreateEvent);
-app.delete('/events/delete', eventsController.deleteEvent);
+app.get('/events/create', passportConf.isAuthenticated, eventsController.getCreateEvent);
+app.post('/events/create', passportConf.isAuthenticated, eventsController.postCreateEvent);
+app.delete('/events/delete', passportConf.isAuthenticated, eventsController.deleteEvent);
 
 
 /**

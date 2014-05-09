@@ -5,7 +5,9 @@ block content
   p.lead
     | Use this document as a way to quickly start any new project.
     br
-    | All you get is this text and a mostly barebones HTML document.
+    ul
+      each ev in events
+        li= ev
 
   if user
     .alert.alert-success.animated.flipInX

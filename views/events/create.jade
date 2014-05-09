@@ -11,9 +11,14 @@ block content
       .col-sm-8
         input.form-control(type='url', name='fb_url', id='fb_url', autofocus=true)
     .form-group
-      label(class='col-sm-2 control-label', for='img_url') Event Image Url
+      label(class='col-sm-2 control-label', for='event_tags') Event Tags
       .col-sm-8
-        input.form-control(type='url', name='img_url', id='img_url', autofocus=true)
+        input.form-control(type='text', name='event_tags', id='event_tags', autofocus=true)
+    if false
+      .form-group
+        label(class='col-sm-2 control-label', for='img_url') Event Image Url
+        .col-sm-8
+          input.form-control(type='url', name='img_url', id='img_url', autofocus=true)
     .form-group
       .col-sm-offset-2.col-sm-8
         button.btn.btn-default(type='submit')

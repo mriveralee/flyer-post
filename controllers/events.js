@@ -4,6 +4,32 @@ var graph = require('fbgraph');
 var User = require('../models/User');
 var Event = require('../models/Event');
 var async = require('async');
+var secrets = require('../config/secrets');
+
+
+var FB_APP_ACCESS_TOKEN = '';
+
+
+
+exports.queryAllEvents = function(next) {
+  Event.find({}, function(err, results) {
+    if (err) {
+      console.log(err);
+      //req.flash('errors', { msg: 'Failed to get events from server!' });
+      return next(err);
+    }
+    console.log(results);
+    return next(null, results);
+    //return res.json(result);
+  });
+};
+
+exports.getSearchEvents = function(req, res) {
+
+
+};
+
+
 
 
 /**
@@ -27,9 +53,9 @@ exports.postCreateEvent = function(req, res) {
   req.assert('fb_url', 'Facebook Event Url cannot be blank').notEmpty().isUrl();
   //req.assert('img_url', 'Event Image Url cannot be blank').notEmpty();
 
-  if (!isImageUrl(req.body.img_url)) {
-    req.body.img_url ='';
-  }
+  //if (!isImageUrl(req.body.img_url)) {
+  //  req.body.img_url ='';
+  //}
 
   // req.assert('img_url', 'Event Image Url must be an image').notEmpty();
 
@@ -48,7 +74,19 @@ exports.postCreateEvent = function(req, res) {
   // Get fb event id from the url
   var fbEventUrl = req.body.fb_url;
   var fbEventId = fbEventUrl.replace(regex1, '').replace(regex2, '');
+  var eventTags = req.body.event_tags;
 
+  if (eventTags.indexOf('#') >= 0) {
+    eventTags = eventTags.split('#');
+  } else if (eventTags.indexOf(',') >= 0) {
+    eventTags = eventTags.split(',');
+  } else if (eventTags.indexOf(' ') >= 1) {
+    eventTags = eventTags.split(' ');
+  } else if (eventTags == ''){
+    eventTags = [];
+  } else {
+    eventTags = [eventTags];
+  }
   var eventImgUrl = req.body.img_url;
 
   // Callback to render event page, if necessary
@@ -81,10 +119,14 @@ exports.postCreateEvent = function(req, res) {
   };
 
   // Grab the FB access token
-  var token = _.findWhere(req.user.tokens, { kind: 'facebook' });
-
+  var token;
+  if (req.user && req.user.tokens) {
+    token = _.findWhere(req.user.tokens, { kind: 'facebook' });
+  }
+  // If logged in, can use app token
+  token = (token) ? token : FB_APP_ACCESS_TOKEN;
   // Store event information in DB and render the next page using the event info
-  retrieveFacebookEvent(token, fbEventId, eventImgUrl, renderEventPage);
+  retrieveFacebookEvent(token, fbEventId, eventImgUrl, eventTags, renderEventPage);
 
 
 };
@@ -146,7 +188,7 @@ var FB_EVENT_PICTURE_EDGE = '/picture?redirect=0&type=large'
  * Retrieves a Facebook event from the FB API
  *
  **/
-var retrieveFacebookEvent = function(token, fbEventId, eventImgUrl, next) {
+var retrieveFacebookEvent = function(token, fbEventId, eventImgUrl, eventTags, next) {
   if (!token) {
     next({msg: 'You must be signed in to Facebook!', code: 9999});
     return;
@@ -183,6 +225,7 @@ var retrieveFacebookEvent = function(token, fbEventId, eventImgUrl, next) {
     var evData = sanitizeFacebookEvent(results.event);
     var picData = sanitizeFacebookEventPhoto(results.picture);
     evData.picture = picData;
+    evData.tags = eventTags;
 
     // console.log(eventData);
     var dbEvent = new Event(evData);
@@ -229,10 +272,10 @@ var retrieveFacebookEvent = function(token, fbEventId, eventImgUrl, next) {
    return ev;
  };
 
- /**
-  * Sanitize FB Event Photo
-  *
-  **/
+/**
+* Sanitize FB Event Photo
+*
+**/
 var sanitizeFacebookEventPhoto = function(pictureData) {
   var photo = (pictureData && pictureData.data && pictureData.data.url)
     ? pictureData.data.url : '';
@@ -243,9 +286,9 @@ var sanitizeFacebookEventPhoto = function(pictureData) {
 
 
 /**
- * Test if a set of data is an FB Event data
- *
- **/
+  * Test if a set of data is an FB Event data
+  *
+  **/
 var isFacebookEvent = function(eventData) {
   if (!eventData) return false;
   // console.log(eventData.privacy);
@@ -258,6 +301,55 @@ var isFacebookEvent = function(eventData) {
  var isImageUrl = function (str) {
     return (str.match(/\.(jpeg|jpg|gif|png)$/) != null);
  };
+
+/**
+  *Get an App access token
+  *
+  **/
+var getAppAccessToken = function(next) {
+  var appId = secrets.facebook.clientID;
+  var appSecret = secrets.facebook.clientSecret;
+
+  var graphUrl = 'oauth/access_token?' +'client_id=' + appId
+    + '&client_secret='+ appSecret + '&grant_type=client_credentials';
+  console.log(graphUrl);
+  graph.get(graphUrl, function(err, data) {
+    console.log(data);
+    if (data.access_token)
+      FB_APP_ACCESS_TOKEN = {accessToken: data.access_token};
+      if (next) return next(FB_APP_ACCESS_TOKEN);
+  });
+};
+
+
+/**
+ * Create Mock Data
+ *
+ **/
+var initMockEvents = function(token) {
+  var evs =[
+  { id:'290221901141692', tags: []},
+  { id:'222000127991070', tags: []},
+  { id:'665665826820952', tags: []},
+  { id:'677388215664345', tags: []},
+  { id:'290221901141692', tags: []},
+  { id:'238987889620233', tags: []},
+  { id:'697815326942814', tags: []},
+  { id:'286118688231403', tags: []},
+  { id:'704623692930003', tags: []},
+  { id:'269620723198855', tags: []},
+  { id:'302832049867374', tags: []},
+  { id:'529992310440512', tags: []},
+  ];
+
+  for (var i =0; i <evs.length; i++) {
+    var e = evs[i];
+    retrieveFacebookEvent(token, e.id, '', e.tags, function(err, res) {
+      if (err) console.log(err);
+    });
+  }
+
+};
 
 
 
@@ -272,3 +364,4 @@ var clearEventModel = function() {
 };
 
 clearEventModel();
+getAppAccessToken(initMockEvents);
