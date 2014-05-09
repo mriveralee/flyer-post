@@ -26,9 +26,142 @@ exports.queryAllEvents = function(next) {
   });
 };
 
-exports.getSearchEvents = function(req, res) {
+exports.searchforEvents = function(searchValues, next) {
+   var regex = new RegExp(searchValues, 'ig');  // 'i' makes it case insensitive
+    console.log('Search Values', searchValues);
+    // Search DB
+    async.parallel({
+      name: function(callback) {
+        Event.find({name: regex}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
 
+          //console.log(results);
+          return callback(null, results);
+          //return res.json(result);
+        });
+      },
+      ownerName: function(callback) {
+        Event.find({owner: {name: regex}}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
+          //console.log(results);
+          return callback(null, results);
+          //return res.json(result);
+        });
 
+      },
+      description: function(callback) {
+        Event.find({description: regex}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
+          //console.log(results);
+          return callback(null, results);
+          //return res.json(result);
+        });
+
+      },
+      location: function(callback) {
+        Event.find({location: regex}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
+          //console.log(results);
+          return callback(null, results);
+          //return res.json(result);
+        });
+
+      },
+      venue: function(callback) {
+        Event.find({venue: regex}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
+          //console.log(results);
+          return callback(null, results);
+          //return res.json(result);
+        });
+
+      },
+      fbId: function(callback) {
+        Event.find({fbId: regex}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
+          //console.log(results);
+          return callback(null, results);
+          //return res.json(result);
+        });
+
+      },
+      privacy: function(callback) {
+        Event.find({privacy: regex}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
+          //console.log(results);
+          return callback(null, results);
+          //return res.json(result);
+        });
+
+      },
+      start_time: function(callback) {
+        Event.find({start_time: regex}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
+          //console.log(results);
+          results = results.sort(sortStartTimeAscending);
+          return callback(null, results);
+          //return res.json(result);
+        });
+
+      },
+      end_time: function(callback) {
+        Event.find({end_time: regex}, function(err, results) {
+          if (err) {
+            console.log(err);
+            //req.flash('errors', { msg: 'Failed to get events from server!' });
+            return callback(err);
+          }
+          //console.log(results);
+          return callback(null, results);
+          //return res.json(result);
+        });
+      }
+    }, function(err, endResults) {
+      if (err) {
+        console.log(err);
+        //req.flash('errors', { msg: 'Failed to get events from server!' });
+        return next(err);
+      }
+      var arr = [];
+      // fInal callback
+      for (key in endResults) {
+        arr = arr.concat(endResults[key]);
+      }
+      var inter = _.uniq(arr, false, function(a){ return a.fbId;});
+      return next(null, inter);
+    });
 };
 
 

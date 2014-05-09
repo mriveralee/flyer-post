@@ -16,7 +16,7 @@ block content
   p.lead
     form(role='form', method='POST',style='margin-right: 7px;')
       input(type='hidden', name='_csrf', value=token)
-      input.form-control(type='text', name='search', id='search', placeHolder='Search for events', style='text-align:center;',autofocus=true)
+      input.form-control(value=search_values,type='text', name='search', id='search', placeHolder='Search for events', style='text-align:center;',autofocus=true)
 
 
     br
@@ -30,7 +30,8 @@ block content
                 img.pull-left(src='#{fbEvent.picture}', width=260, height=260, style='margin-left:-10px; margin-right: 5px')
                 h4
                   // i.fa.fa-calendar(style='color: #335397')
-                  |  #{fbEvent.name}
+                  a.connect(href='./events/view/#{fbEvent.fbId}')
+                    |  #{fbEvent.name}
                   br
                   small.text-muted(style='font-size:14px;')
                     | by #{fbEvent.owner.name}
@@ -79,3 +80,4 @@ block content
                   a.connect(href='#{fbg}', target='_blank')
                     i.fa.fa-calendar-o
                     | Google Calendar
+                  br

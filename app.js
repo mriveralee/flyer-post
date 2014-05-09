@@ -96,6 +96,7 @@ app.use(express.errorHandler());
  * Application routes.
  */
 app.get('/', findController.find);
+app.post('/', findController.postFind);
 // app.get('/', homeController.index);
 
 app.get('/login', userController.getLogin);
