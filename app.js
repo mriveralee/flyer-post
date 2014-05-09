@@ -10,11 +10,13 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var expressValidator = require('express-validator');
 
+
 /**
  * Load controllers.
  */
 
 var homeController = require('./controllers/home');
+var findController = require('./controllers/find');
 var userController = require('./controllers/user');
 var apiController = require('./controllers/api');
 var contactController = require('./controllers/contact');
@@ -93,8 +95,9 @@ app.use(express.errorHandler());
 /**
  * Application routes.
  */
+app.get('/', findController.find);
+// app.get('/', homeController.index);
 
-app.get('/', homeController.index);
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);

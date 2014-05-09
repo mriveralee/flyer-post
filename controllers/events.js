@@ -12,7 +12,7 @@ var Event = require('../models/Event');
 
 exports.getCreateEvent = function(req, res) {
   res.render('events/create', {
-    title: 'Create Event - FlyerPost'
+    title: 'Create Event'
   });
 };
 
@@ -23,9 +23,14 @@ exports.getCreateEvent = function(req, res) {
  **/
 exports.postCreateEvent = function(req, res) {
   // Read FB url from the post and get all of the other information using the api calls.
-  req.assert('fb_url', 'Facebook Event URL cannot be blank').notEmpty();
-  //req.assert('email', 'Email is not valid').isEmail();
-  //req.assert('message', 'Message cannot be blank').notEmpty();
+  req.assert('fb_url', 'Facebook Event Url cannot be blank').notEmpty().isUrl();
+  req.assert('img_url', 'Event Image Url cannot be blank').notEmpty();
+
+  if (!isImageUrl(req.body.img_url)) {
+    req.body.img_url ='';
+  }
+
+  req.assert('img_url', 'Event Image Url must be an image').notEmpty();
 
   var errors = req.validationErrors();
 
@@ -42,6 +47,8 @@ exports.postCreateEvent = function(req, res) {
   // Get fb event id from the url
   var fbEventUrl = req.body.fb_url;
   var fbEventId = fbEventUrl.replace(regex1, '').replace(regex2, '');
+
+  var eventImgUrl = req.body.img_url;
 
   // Callback to render event page, if necessary
   var renderEventPage = function(err, eventData) {
@@ -70,7 +77,7 @@ exports.postCreateEvent = function(req, res) {
   var token = _.findWhere(req.user.tokens, { kind: 'facebook' });
 
   // Store event information in DB and render the next page using the event info
-  retrieveFacebookEvent(token, fbEventId, renderEventPage);
+  retrieveFacebookEvent(token, fbEventId, eventImgUrl, renderEventPage);
 
 
 };
@@ -121,7 +128,7 @@ exports.getEvent = function(req, res, next) {
  *
  **/
 
-var retrieveFacebookEvent = function(token, fbEventId, next) {
+var retrieveFacebookEvent = function(token, fbEventId, eventImgUrl, next) {
   if (!token) {
     next(err);
     return;
@@ -134,6 +141,7 @@ var retrieveFacebookEvent = function(token, fbEventId, next) {
     eventData.fbId = eventData.id;
     delete eventData.id;
     var dbEvent = new Event(eventData);
+    dbEvent.img_url = eventImgUrl;
 
     dbEvent.save(function(err) {
       if (err) {
@@ -155,6 +163,15 @@ var isFacebookEvent = function(eventData) {
   if (!eventData) return false;
   return eventData.owner && eventData.description && eventData.name;
 };
+
+/**
+ * Check if something is an image url
+ */
+ var isImageUrl = function (str) {
+    return (str.match(/\.(jpeg|jpg|gif|png)$/) != null);
+ };
+
+
 
 /**
  * Clear the Event Model

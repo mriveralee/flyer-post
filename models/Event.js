@@ -1,6 +1,4 @@
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt-nodejs');
-var crypto = require('crypto');
 
 var  fbBaseEventUrl = 'http://www.facebook.com/'
 
@@ -23,6 +21,8 @@ var eventSchema = new mongoose.Schema({
   attending: Array,
   feed: Array,
   photos: Array,
+  img_url: String,
+  tags: Array
 });
 
 // TODO: Get event details from the FB Events API
@@ -34,24 +34,6 @@ var eventSchema = new mongoose.Schema({
 /**
  * Hash the password for security.
  */
-
-eventSchema.pre('save', function(next) {
-  var user = this;
-  var SALT_FACTOR = 5;
-
-  if (!user.isModified('password')) return next();
-
-  bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
-    if (err) return next(err);
-
-    bcrypt.hash(user.password, salt, null, function(err, hash) {
-      if (err) return next(err);
-      user.password = hash;
-      next();
-    });
-  });
-});
-
 
 
 module.exports = mongoose.model('Event', eventSchema);
