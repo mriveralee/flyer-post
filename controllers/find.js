@@ -14,7 +14,5 @@ exports.find = function(req, res) {
       events: data
     });
   };
-
   eventsController.queryAllEvents(renderFxn);
-
 };

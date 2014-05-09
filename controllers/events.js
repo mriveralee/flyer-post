@@ -18,7 +18,8 @@ exports.queryAllEvents = function(next) {
       //req.flash('errors', { msg: 'Failed to get events from server!' });
       return next(err);
     }
-    console.log(results);
+    //console.log(results);
+    results = results.sort(sortStartTimeAscending);
     return next(null, results);
     //return res.json(result);
   });
@@ -30,6 +31,24 @@ exports.getSearchEvents = function(req, res) {
 };
 
 
+
+/**
+ * Sorts by start time in ascending order
+ */
+
+var sortStartTimeAscending = function (a, b) {
+    // Turn your strings into dates, and then subtract them
+    // to get a value that is either negative, positive, or zero.
+    return new Date(a.start_time) - new Date(b.start_time);
+};
+
+/**
+ * Sorts by start time in descending order
+ */
+
+var sortStartTimeDescending = function (a, b) {
+  return new Date(a.start_time) - new Date(b.start_time);
+};
 
 
 /**

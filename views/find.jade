@@ -1,5 +1,13 @@
 extends layout
 
+
+if user
+  .alert.alert-success.animated.flipInX
+    i.fa.fa-check
+    strong Success!
+    |  You are logged in.
+
+
 block content
   h1 Find Events @ Penn
   p.lead
@@ -8,9 +16,3 @@ block content
     ul
       each ev in events
         li= ev
-
-  if user
-    .alert.alert-success.animated.flipInX
-      i.fa.fa-check
-      strong Success!
-      |  You are logged in.
