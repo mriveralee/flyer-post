@@ -23,11 +23,12 @@ block content
     ul.list-unstyled
       for fbEvent in events
 
-        li.find-inline(style='cursor:pointer; cursor:hand;width:570px')
+        li.find-inline(style='width:570px')
           .panel.panel-default
             .panel-body
               .clearfix
-                img.pull-left(src='#{fbEvent.picture}', width=260, height=260, style='margin-left:-10px; margin-right: 5px')
+                a.connect(href='./events/view/#{fbEvent.fbId}')
+                  img.pull-left(src='#{fbEvent.picture}', width=260, height=260, style='margin-left:-10px; margin-right: 5px')
                 h4
                   // i.fa.fa-calendar(style='color: #335397')
                   a.connect(href='./events/view/#{fbEvent.fbId}')
