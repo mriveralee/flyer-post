@@ -28,6 +28,7 @@ var eventSchema = new mongoose.Schema({
   img_url: {type: String, default: ''},
 
   tags: {type: Array, default: []},
+  tweets: {type:Array, default: []}
 });
 
 // TODO: Get event details from the FB Events API

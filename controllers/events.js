@@ -1,6 +1,7 @@
 var passport = require('passport');
 var _ = require('underscore');
 var graph = require('fbgraph');
+var Twit = require('twit');
 var User = require('../models/User');
 var Event = require('../models/Event');
 var async = require('async');
@@ -347,24 +348,50 @@ var getAppAccessToken = function(next) {
  **/
 var initMockEvents = function(token) {
   var evs =[
-  { id:'290221901141692', tags: []},
+  { id:'290221901141692', tags: ['yoga', 'GAPSA', 'Penn', 'UPenn', 'med']},
   { id:'222000127991070', tags: []},
-  { id:'665665826820952', tags: []},
-  { id:'677388215664345', tags: []},
-  { id:'290221901141692', tags: []},
-  { id:'238987889620233', tags: []},
-  { id:'697815326942814', tags: []},
-  { id:'286118688231403', tags: []},
-  { id:'704623692930003', tags: []},
-  { id:'269620723198855', tags: []},
-  { id:'302832049867374', tags: []},
-  { id:'529992310440512', tags: []},
+  { id:'665665826820952', tags: ['Makuu', 'African American Arts Alliance', 'UPenn', 'Penn']},
+  { id:'677388215664345', tags: ['Philadelphia', 'Old City', '#NightMkt']},
+  { id:'238987889620233', tags: ['Disconnects', 'Penn', 'BYO', 'UPenn']},
+  { id:'697815326942814', tags: ['CIS', 'UPenn', 'hackathon']},
+  { id:'286118688231403', tags: ['CIS', 'Adi Dahiya', 'WICS', 'UPenn', 'Typography', 'Computer Science']},
+  { id:'704623692930003', tags: ['UPenn', 'Adi Dahiya', 'Doorman', 'Houston Hall', 'Product Design' ]},
+  { id:'269620723198855', tags: ['UPenn', 'La Casa Latina', 'ARCH', 'PAACH', 'QPOC']},
+  { id:'302832049867374', tags: ['New York Times', 'Philadelphia', 'Visualization', 'Data', 'CG@Penn', 'Levine Hall', 'CS']},
+  { id:'529992310440512', tags: ['UPenn', 'Penn Museum', 'Harrison Auditorium', 'a cappella', 'music', 'singing', 'counterparts']},
   ];
 
   for (var i =0; i <evs.length; i++) {
     var e = evs[i];
     retrieveFacebookEvent(token, e.id, '', e.tags, function(err, res) {
       if (err) console.log(err);
+      if (res) {
+          var next = function(err, data) {
+            if (err) console.log('twitter error', err);
+            if (data) {
+              res.tweets = data.statuses;
+              console.log('twitter data', data);
+              res.save();
+            }
+          };
+
+          // Init twitter api call
+          // var token = _.findWhere(req.user.tokens, { kind: 'twitter' });
+          var T = new Twit({
+            consumer_key: secrets.twitter.consumerKey,
+            consumer_secret: secrets.twitter.consumerSecret,
+            access_token: secrets.twitter.accessToken,
+            access_token_secret: secrets.twitter.accessTokenSecret
+          });
+
+          // Make call
+          var qValue =  res.name.split(' ').join(' OR ') + " OR " + res.tags.join(' OR ');
+
+          T.get('search/tweets', { q: qValue +' since:' + res.start_time.substring(0, 10), count: 10 }, function(err, reply) {
+            if (err) return next(err);
+            if (reply) next(null, reply);
+          });
+        }
     });
   }
 
@@ -382,5 +409,5 @@ var clearEventModel = function() {
   });
 };
 
-clearEventModel();
+// clearEventModel();
 getAppAccessToken(initMockEvents);
