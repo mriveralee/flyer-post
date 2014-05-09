@@ -2,22 +2,68 @@ extends ../layout
 
 block content
   .page-header
-    h2
-      i.fa.fa-facebook-square(style='color: #335397')
-      | #{fbEvent.name}
-
-  .lead hosted by #{fbEvent.owner.name}
-
+    h3
+      i.fa.fa-calendar(style='color: #335397')
+      |  #{fbEvent.name}
+      small  hosted by #{fbEvent.owner.name}
 
   .panel.panel-default
     .panel-body
       .clearfix
-        if useEventPicture
-          img.pull-left(src=fbEvent.picture, style='margin-right: 10px')
-
-        =fbEvent.name
-        small.text-muted  no text
-        br
-        p !{fbEvent.description.replace(/\n/g, '<br/>')}
         if useEventCover
-          img.pull-center(src=fbEvent.cover.source, style='margin-right: 10px')
+          img.pull-right(src=fbEvent.cover.source, style='width: 400px; margin-right: 10px')
+
+        if useEventPicture
+          img.pull-right(src=fbEvent.picture, style='margin-right: 10px')
+
+        h4
+          i.fa.fa-info-circle(style='color: #335397')
+          | Description
+        p(style='margin-left: 10px') !{fbEvent.description.replace(/\n/g, '<br/>')}
+
+        h4
+          i.fa.fa-clock-o(style='color: #335397')
+          | When
+
+
+        if (fbEvent.start_time != '')
+          - var y = fbEvent.start_time.split('T');
+          - var z = ((y.length > 1) ? y[0] + ' ' + y[1].split('-')[0] : y[0]);
+          - var sDate = new Date(z);
+          - var tStr = sDate.toLocaleTimeString();
+          - var start = sDate.toLocaleDateString() + ', ' + tStr.substring(0);
+          p(style='margin-left: 10px') Starts: #{start}
+        if (fbEvent.end_time != '')
+          - var y = fbEvent.end_time.split('T');
+          - var z = ((y.length > 1) ? y[0] + ' ' + y[1].split('-')[0] : y[0]);
+          - var eDate = new Date(z);
+          - var tStr = eDate.toLocaleTimeString();
+          - var end = eDate.toLocaleDateString() + ', ' + tStr.substring(0);
+          p(style='margin-left: 10px') Ends: #{end}
+
+        h4
+          i.fa.fa-location-arrow(style='color: #335397')
+          | Where
+        p(style='margin-left: 10px') #{fbEvent.location}
+
+        small.text-muted
+
+  br
+  if fbEvent.tweets.length > 0
+    .lead
+      i.fa.fa-twitter(style='color: #335397')
+      Latest Tweets
+
+    ul.list-unstyled
+      for tweet in fbEvent.tweets
+        li
+          .panel.panel-default
+            .panel-body
+              .clearfix
+                - var image = tweet.user.profile_image_url.replace('_normal', '');
+                img.pull-left(src='#{image}', width=50, height=50, style='margin-right: 10px')
+
+                =tweet.user.name
+                small.text-muted  @#{tweet.user.screen_name}
+                br
+                small #{tweet.text}

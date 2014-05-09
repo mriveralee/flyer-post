@@ -188,8 +188,8 @@ exports.getEvent = function(req, res, next) {
     return res.render('events/view', {
       title: fbEvent.name + ' - FlyerPost',
       fbEvent: fbEvent,
-      useEventCover: false,
-      useEventPicture: true
+      useEventCover: true,
+      useEventPicture: false
     });
   });
 };
@@ -410,4 +410,4 @@ var clearEventModel = function() {
 };
 
 // clearEventModel();
-getAppAccessToken(initMockEvents);
+// getAppAccessToken(initMockEvents);
